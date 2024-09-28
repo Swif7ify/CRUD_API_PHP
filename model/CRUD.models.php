@@ -64,7 +64,7 @@ class CRUD_models implements IExample {
     }
 
     public function insertData($data) {
-        $sql = "UPDATE " . $this->table_name . " SET firstname = ?, lastname = ?, is_admin = ? WHERE id = ?;";
+        $sql = "INSERT INTO " . $this->table_name . " (firstname, lastname, is_Admin) VALUES (?, ?, ?);";
         try {
             $stmt = $this->pdo->prepare($sql);
             if($stmt->execute([$data->firstname, $data->lastname, $data->is_admin])) {
@@ -81,7 +81,7 @@ class CRUD_models implements IExample {
         $sql = "UPDATE " . $this->table_name . " SET firstname = ?, lastname = ?, is_admin = ? WHERE id = ?;";
         try {
             $stmt = $this->pdo->prepare($sql);
-            if($stmt->execute([$data->id, $data->firstname, $data->lastname, $data->is_admin])) {
+            if($stmt->execute([$data->firstname, $data->lastname, $data->is_admin, $data->id])) {
                 return $this->glb->responsePayload(null, "success" , "Succesfully Change User", 200);
             } else {
                 return $this->glb->responsePayload(null, "failed" , "Failed to Change Data", 404);
