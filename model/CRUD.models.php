@@ -3,12 +3,12 @@
 interface IExample {
     public function getAll();
     public function insertData($data);
-    // public function getSingle();
-    // public function updateData();
+    public function getSingle($data);
+    public function updateData($data);
     public function deleteData($data);
 }
 
-class Try_models implements IExample {
+class CRUD_models implements IExample {
 
     protected $pdo;
     protected $glb;
@@ -44,8 +44,27 @@ class Try_models implements IExample {
         }
     }
 
+    public function getSingle($data) {
+        $sql = "SELECT * FROM " . $this->table_name  . " WHERE id = ?";
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            if ($stmt->execute([$data->id])){
+                $data =  $stmt->fetchAll();
+                if ($stmt->rowCount() >= 1){
+                    return $this->glb->responsePayload($data, "success" , "Pulled Single User", 200);
+                }else{
+                    return $this->glb->responsePayload(null, "failed" , "No data pulled", 404);
+                }
+            }
+        } catch (\PDOException $e) {
+            echo $e->getMessage();
+        }
+      
+        
+    }
+
     public function insertData($data) {
-        $sql = "INSERT INTO " . $this->table_name . " (firstname, lastname, is_admin) VALUES (?, ?, ?);";
+        $sql = "UPDATE " . $this->table_name . " SET firstname = ?, lastname = ?, is_admin = ? WHERE id = ?;";
         try {
             $stmt = $this->pdo->prepare($sql);
             if($stmt->execute([$data->firstname, $data->lastname, $data->is_admin])) {
@@ -53,6 +72,21 @@ class Try_models implements IExample {
             } else {
                 return $this->glb->responsePayload(null, "failed" , "Failed to Insert Data", 404);
             }
+        } catch (\PDOException $e) {
+            echo $e->getMessage();
+        }
+    }
+
+    public function updateData($data) {
+        $sql = "UPDATE " . $this->table_name . " SET firstname = ?, lastname = ?, is_admin = ? WHERE id = ?;";
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            if($stmt->execute([$data->id, $data->firstname, $data->lastname, $data->is_admin])) {
+                return $this->glb->responsePayload(null, "success" , "Succesfully Change User", 200);
+            } else {
+                return $this->glb->responsePayload(null, "failed" , "Failed to Change Data", 404);
+            }
+
         } catch (\PDOException $e) {
             echo $e->getMessage();
         }
@@ -72,6 +106,5 @@ class Try_models implements IExample {
             echo $e->getMessage();
         }
     }
-
     
 }

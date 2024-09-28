@@ -12,7 +12,7 @@ $rootPath = $_SERVER["DOCUMENT_ROOT"];
 $apiPath = $rootPath . "/";
 require_once($apiPath . 'configs/connection.php');
 
-require_once($apiPath . 'model/try.models.php');
+require_once($apiPath . 'model/CRUD.models.php');
 require_once($apiPath . 'model/Global.models.php');
 
 
@@ -21,7 +21,7 @@ $pdo = $db->connect();
 
 
 $global = new GlobalMethods();
-$try = new Try_models($pdo, $global);
+$CRUD = new CRUD_models($pdo, $global);
 
 $req = [];
 if (isset($_REQUEST['request']))
@@ -30,17 +30,23 @@ else $req = array("errorcatcher");
 
 switch ($_SERVER['REQUEST_METHOD']) {
     case 'GET':
-        if($req[0]== 'getAllData') {echo json_encode($try->getAll()); return;}
+        $data_input = json_decode(file_get_contents("php://input"));
+        if($req[0]== 'getAllData') {echo json_encode($CRUD->getAll()); return;}
+        if($req[0]== 'getSingle') {echo json_encode($CRUD->getSingle($data_input)); return;}
         break;
     
     case 'POST':
         $data_input = json_decode(file_get_contents("php://input"));
-        if($req[0] == 'insertData'){echo json_encode($try->insertData($data_input)); return;}
+        if($req[0] == 'insertData'){echo json_encode($CRUD->insertData($data_input)); return;}
         break;
+
+    case 'PUT':
+        $data_input = json_decode(file_get_contents("php://input"));
+        if($req[0] == 'updateData'){echo json_encode($CRUD->updateData($data_input)); return;}
 
     case 'DELETE':
         $data_input = json_decode(file_get_contents("php://input"));
-        if($req[0]== 'deleteData'){echo json_encode($try->deleteData($data_input)); return;} 
+        if($req[0]== 'deleteData'){echo json_encode($CRUD->deleteData($data_input)); return;} 
         break;
 
     default:
