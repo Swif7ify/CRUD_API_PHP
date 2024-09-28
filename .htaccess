@@ -1,0 +1,7 @@
+<IfModule mod.rewrite.c>
+    RewriteEngine On
+    RewriteEngine %{REQUEST_FILENAME} !-d
+    RewriteEngine %{REQUEST_FILENAME} !-f
+    RewriteRule ^(.*)$ main.php?request=$1 [L,QSA]
+    RewriteRule .* - [e=HTTP_AUTHORIZATION:%{HTTP:AUTHORIZATION}]
+</IfModule
